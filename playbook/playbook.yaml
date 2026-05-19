@@ -1,0 +1,13 @@
+---
+schema_version: "1.0.0"
+id: playbook.your-project-slug
+north_star: "Replace with one sentence describing the outcome your project optimises for."
+owners:
+  - name: ""
+    role: ""
+styleguide_present: false
+design_present: false
+provenance:
+  git_commit: ""
+  updated_at: ""
+---

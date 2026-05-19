@@ -1,0 +1,26 @@
+{
+  "name": "playbook",
+  "version": "0.1.0",
+  "description": "Drop one folder into any agentic-coding project. Every agent immediately knows the project's north star, tool doctrine, design rules, decisions already made, and errors already hit.",
+  "keywords": ["claude", "codex", "cursor", "agents", "agentic", "ai", "playbook", "AGENTS.md"],
+  "license": "MIT",
+  "author": "Noel Tock",
+  "bin": {
+    "playbook": "./bin/playbook.js"
+  },
+  "files": [
+    "bin/",
+    "playbook/",
+    "templates/"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "prepublishOnly": "node bin/playbook.js --version",
+    "render": "node playbook/scripts/render.js",
+    "render:viewer": "node playbook/scripts/render.js --viewer",
+    "validate": "node playbook/scripts/validate.js",
+    "check": "node playbook/scripts/validate.js && node playbook/scripts/render.js"
+  }
+}

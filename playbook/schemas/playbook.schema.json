@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:playbook:playbook:1.0.0",
+  "title": "Playbook Config",
+  "description": "Validates playbook.yaml (parsed as JSON or YAML-to-JSON)",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "id",
+    "north_star",
+    "owners",
+    "styleguide_present",
+    "design_present",
+    "provenance"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 3,
+      "pattern": "^playbook\\.[a-z0-9][a-z0-9-]*(\\.[a-z0-9][a-z0-9-]*)*$"
+    },
+    "north_star": {
+      "type": "string",
+      "minLength": 10
+    },
+    "owners": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "role"],
+        "properties": {
+          "name": { "type": "string" },
+          "role": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "styleguide_present": {
+      "type": "boolean"
+    },
+    "design_present": {
+      "type": "boolean"
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["git_commit", "updated_at"],
+      "properties": {
+        "git_commit": { "type": "string" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": true
+    }
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:playbook:error:1.0.0",
+  "title": "Error Record",
+  "description": "Validates a single line of errors.jsonl",
+  "type": "object",
+  "required": [
+    "id",
+    "ts",
+    "kind",
+    "summary",
+    "resolution",
+    "resolved"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^ERR-\\d+$"
+    },
+    "ts": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "kind": {
+      "type": "string",
+      "enum": ["error", "warning", "info"]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 5
+    },
+    "resolution": {
+      "type": "string",
+      "enum": ["unresolved", "permanent", "workaround", "recurrent"]
+    },
+    "resolved": {
+      "type": "boolean"
+    },
+    "context": {
+      "type": "string"
+    },
+    "seen_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "last_seen": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "remedy": {
+      "type": "string"
+    },
+    "resolved_ts": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "if": {
+    "properties": {
+      "resolved": { "const": true }
+    }
+  },
+  "then": {
+    "required": ["resolved_ts"]
+  }
+}

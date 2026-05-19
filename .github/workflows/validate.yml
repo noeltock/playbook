@@ -1,0 +1,24 @@
+name: Validate playbook
+
+on:
+  push:
+    paths:
+      - "playbook/**"
+  pull_request:
+    paths:
+      - "playbook/**"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Validate schemas
+        run: node playbook/scripts/validate.js
+      - name: Check render output is up to date
+        run: |
+          node playbook/scripts/render.js
+          git diff --exit-code playbook/DECISIONS.md playbook/ERRORS.md

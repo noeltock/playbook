@@ -1,0 +1,34 @@
+{
+  "description": "Playbook hooks: detect structural drift after Bash/Write/Edit tool use, and trigger viewer rebuilds after JSONL source writes.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${PLAYBOOK_ROOT}/hooks/detect-drift.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${PLAYBOOK_ROOT}/hooks/detect-drift.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"${CLAUDE_TOOL_INPUT_FILE_PATH:-}\" | grep -qE \"(decisions|errors)\\.jsonl$\" && ${PLAYBOOK_ROOT}/hooks/rebuild-viewer.sh || true'"
+          }
+        ]
+      }
+    ]
+  }
+}

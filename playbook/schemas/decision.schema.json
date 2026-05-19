@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:playbook:decision:1.0.0",
+  "title": "Decision Record",
+  "description": "Validates a single line of decisions.jsonl (MADR-compatible)",
+  "type": "object",
+  "required": [
+    "id",
+    "ts",
+    "title",
+    "status",
+    "context",
+    "decision",
+    "consequences"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^DEC-\\d+$"
+    },
+    "ts": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 5
+    },
+    "status": {
+      "type": "string",
+      "enum": ["proposed", "accepted", "rejected", "deprecated", "superseded"]
+    },
+    "context": {
+      "type": "string",
+      "minLength": 10
+    },
+    "decision": {
+      "type": "string",
+      "minLength": 10
+    },
+    "consequences": {
+      "type": "string"
+    },
+    "supersedes": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "evidence": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}
