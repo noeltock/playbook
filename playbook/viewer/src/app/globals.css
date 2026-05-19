@@ -1,36 +1,29 @@
 @import 'fumadocs-ui/style.css';
 
+/* Geist fonts — applied via CSS variables set by the geist package */
+body {
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+code,
+pre,
+kbd,
+samp,
+[data-rehype-pretty-code-figure] {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+/* Sidebar width */
 :root {
-  --color-fd-background: hsl(0 0% 100%);
-  --color-fd-foreground: hsl(222 47% 11%);
-  --color-fd-muted: hsl(220 14% 96%);
-  --color-fd-muted-foreground: hsl(220 9% 46%);
-  --color-fd-border: hsl(220 13% 91%);
-  --color-fd-primary: hsl(220 70% 50%);
-  --color-fd-primary-foreground: hsl(0 0% 100%);
-  --color-fd-card: hsl(0 0% 100%);
-  --color-fd-card-foreground: hsl(222 47% 11%);
   --fd-sidebar-width: 260px;
 }
 
-.dark {
-  --color-fd-background: hsl(222 47% 6%);
-  --color-fd-foreground: hsl(210 40% 98%);
-  --color-fd-muted: hsl(222 47% 11%);
-  --color-fd-muted-foreground: hsl(215 20% 65%);
-  --color-fd-border: hsl(222 47% 15%);
-  --color-fd-primary: hsl(220 70% 60%);
-  --color-fd-card: hsl(222 47% 9%);
-  --color-fd-card-foreground: hsl(210 40% 98%);
-}
-
-/* Tighten prose spacing to match shadcn/ui docs style */
-.prose {
-  --prose-body: var(--color-fd-foreground);
-  max-width: 72ch;
-}
-
-/* Sidebar nav item active state */
+/* Active nav item */
 [data-active='true'] {
   font-weight: 500;
+}
+
+/* Prose width */
+.prose {
+  max-width: 72ch;
 }

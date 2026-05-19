@@ -9,9 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "fumadocs-ui": "^15.0.0",
     "fumadocs-core": "^15.0.0",
     "fumadocs-mdx": "^11.0.0",
+    "fumadocs-ui": "^15.0.0",
+    "geist": "^1.7.0",
     "next": "^15.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
