@@ -7,8 +7,9 @@ import { ErrorLog } from '@/components/error-log'
 import { TokenGrid } from '@/components/token-grid'
 import { PlaybookOverview } from '@/components/playbook-overview'
 
-export default async function Page({ params }: { params: { slug?: string[] } }) {
-  const page = source.getPage(params.slug)
+export default async function Page({ params }: { params: Promise<{ slug?: string[] }> }) {
+  const { slug } = await params
+  const page = source.getPage(slug)
   if (!page) notFound()
 
   const MDX = page.data.body
@@ -36,8 +37,9 @@ export function generateStaticParams() {
   return source.generateParams()
 }
 
-export function generateMetadata({ params }: { params: { slug?: string[] } }) {
-  const page = source.getPage(params.slug)
+export async function generateMetadata({ params }: { params: Promise<{ slug?: string[] }> }) {
+  const { slug } = await params
+  const page = source.getPage(slug)
   if (!page) notFound()
   return { title: page.data.title, description: page.data.description }
 }

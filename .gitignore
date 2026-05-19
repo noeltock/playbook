@@ -1,5 +1,12 @@
 node_modules/
 .DS_Store
+
+# Dev artifacts — not part of the distributed playbook
+/CLAUDE.md
+
+# Viewer build artifacts
 playbook/viewer/.next/
 playbook/viewer/out/
+playbook/viewer/.source/
+
 *.local

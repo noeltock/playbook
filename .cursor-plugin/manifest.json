@@ -1,0 +1,11 @@
+{
+  "name": "playbook",
+  "version": "0.1.0",
+  "rules": [
+    {
+      "name": "playbook",
+      "path": "templates/AGENTS.md",
+      "description": "Playbook routing stub — reads NORTH-STAR.md, TOOLS.MD, and logs before acting."
+    }
+  ]
+}

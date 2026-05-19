@@ -1,0 +1,6 @@
+{
+  "name": "playbook",
+  "version": "0.1.0",
+  "description": "Project playbook: north star, tool doctrine, decisions, errors, and self-healing sync.",
+  "skills_dir": "playbook/skills"
+}

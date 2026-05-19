@@ -1,0 +1,35 @@
+{
+  "name": "playbook",
+  "version": "0.1.0",
+  "description": "Project playbook: north star, tool doctrine, decisions, errors, and self-healing sync.",
+  "skills": [
+    {
+      "name": "playbook-decide",
+      "path": "playbook/skills/playbook-decide/SKILL.md"
+    },
+    {
+      "name": "playbook-error",
+      "path": "playbook/skills/playbook-error/SKILL.md"
+    },
+    {
+      "name": "playbook-sync",
+      "path": "playbook/skills/playbook-sync/SKILL.md"
+    },
+    {
+      "name": "playbook-render",
+      "path": "playbook/skills/playbook-render/SKILL.md"
+    },
+    {
+      "name": "playbook-styleguide",
+      "path": "playbook/skills/playbook-styleguide/SKILL.md"
+    }
+  ],
+  "hooks": "playbook/hooks/hooks.json",
+  "commands": [
+    { "name": "playbook-decide", "skill": "playbook-decide" },
+    { "name": "playbook-error", "skill": "playbook-error" },
+    { "name": "playbook-sync", "skill": "playbook-sync" },
+    { "name": "playbook-render", "skill": "playbook-render" },
+    { "name": "playbook-styleguide", "skill": "playbook-styleguide" }
+  ]
+}
