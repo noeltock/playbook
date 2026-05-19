@@ -87,16 +87,25 @@ function loadPlaybook(): PlaybookData | null {
   }
 }
 
+function FieldLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-xs text-fd-muted-foreground mb-1.5 font-medium">
+      {children}
+    </p>
+  )
+}
+
 function Artefact({ label, active }: { label: string; active: boolean }) {
   return (
     <span
-      className={`inline-block border rounded px-2 py-0.5 text-xs font-mono ${
+      style={active ? {} : { borderStyle: 'dashed' }}
+      className={`inline-block border rounded px-2.5 py-1 text-sm ${
         active
           ? 'border-fd-foreground text-fd-foreground'
           : 'border-fd-border text-fd-muted-foreground'
       }`}
     >
-      {active ? label : `${label} —`}
+      {label}
     </span>
   )
 }
@@ -106,8 +115,8 @@ export function PlaybookOverview() {
 
   if (!data) {
     return (
-      <p className="text-fd-muted-foreground italic">
-        No <code>playbook.yaml</code> found in the parent directory.
+      <p className="text-fd-muted-foreground">
+        No playbook.yaml found in the parent directory.
       </p>
     )
   }
@@ -116,38 +125,37 @@ export function PlaybookOverview() {
     !data.north_star || data.north_star === NORTH_STAR_PLACEHOLDER
 
   return (
-    <div className="space-y-6">
-      <div className="rounded-lg border border-fd-border p-6">
-        <p className="text-xs font-mono text-fd-muted-foreground mb-3 uppercase tracking-widest">
-          North Star
-        </p>
+    <div className="space-y-8">
+      {/* North star */}
+      <div className="rounded-lg border border-fd-border p-8">
+        <FieldLabel>North Star</FieldLabel>
         {isPlaceholderNorthStar ? (
-          <p className="text-fd-muted-foreground italic text-sm">
-            Not set — open <code>playbook.yaml</code> and replace the{' '}
-            <code>north_star</code> placeholder.
+          <p className="text-fd-muted-foreground text-base">
+            Not set. Open playbook.yaml and replace the north_star placeholder.
           </p>
         ) : (
-          <p className="text-lg leading-snug">{data.north_star}</p>
+          <p className="text-xl leading-snug font-medium">{data.north_star}</p>
         )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
+      {/* Meta */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
         {data.id && (
           <div>
-            <p className="text-xs font-mono text-fd-muted-foreground mb-1 uppercase tracking-widest">Project ID</p>
-            <p className="font-mono text-xs">{data.id}</p>
+            <FieldLabel>Project ID</FieldLabel>
+            <p className="font-mono text-sm">{data.id}</p>
           </div>
         )}
 
         {data.owners && data.owners.length > 0 && (
           <div>
-            <p className="text-xs font-mono text-fd-muted-foreground mb-1 uppercase tracking-widest">Owners</p>
-            <ul className="list-none space-y-0.5">
+            <FieldLabel>Owners</FieldLabel>
+            <ul className="list-none space-y-1">
               {data.owners.map((o, i) => (
-                <li key={i} className="text-xs">
+                <li key={i} className="text-sm">
                   {o.name || '—'}
                   {o.role && (
-                    <span className="text-fd-muted-foreground ml-1">({o.role})</span>
+                    <span className="text-fd-muted-foreground ml-1.5">({o.role})</span>
                   )}
                 </li>
               ))}
@@ -156,7 +164,7 @@ export function PlaybookOverview() {
         )}
 
         <div>
-          <p className="text-xs font-mono text-fd-muted-foreground mb-2 uppercase tracking-widest">Artefacts</p>
+          <FieldLabel>Artefacts</FieldLabel>
           <div className="flex gap-2 flex-wrap">
             <Artefact label="Styleguide" active={data.styleguide_present ?? false} />
             <Artefact label="Design" active={data.design_present ?? false} />
@@ -165,8 +173,8 @@ export function PlaybookOverview() {
 
         {data.provenance?.updated_at && (
           <div>
-            <p className="text-xs font-mono text-fd-muted-foreground mb-1 uppercase tracking-widest">Last updated</p>
-            <p className="text-xs font-mono">{data.provenance.updated_at}</p>
+            <FieldLabel>Last updated</FieldLabel>
+            <p className="font-mono text-sm">{data.provenance.updated_at}</p>
           </div>
         )}
       </div>
