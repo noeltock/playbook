@@ -11,19 +11,26 @@ Drop `playbook/` into any repo where AI agents are doing meaningful work. From t
 
 ## Install
 
-**From GitHub (no npm publish required):**
+**Via npx from GitHub** (public repo, no npm registry needed):
 
 ```bash
 npx github:noeltock/playbook init
 ```
 
-**From a specific git URL (SSH or HTTPS):**
+**Via SSH URL** (if you have SSH access):
 
 ```bash
 npx github:noeltock/playbook init --from git@github.com:noeltock/playbook.git
 ```
 
-Both commands drop `playbook/` and a thin `AGENTS.md` routing stub into the current directory. Existing files are never overwritten — only new files are added. Detects and seeds `.cursor/rules`, `.windsurf/rules`, `.agents/skills/`, and `CLAUDE.md` automatically.
+**Or clone and run directly:**
+
+```bash
+git clone git@github.com:noeltock/playbook.git /tmp/playbook-source
+node /tmp/playbook-source/bin/playbook.js init
+```
+
+All three drop `playbook/` and a thin `AGENTS.md` routing stub into the current directory. Existing files are never overwritten — only new files are added. Detects and seeds `.cursor/rules`, `.windsurf/rules`, `.agents/skills/`, and `CLAUDE.md` automatically.
 
 **Or as a submodule** (pin to a specific version):
 
