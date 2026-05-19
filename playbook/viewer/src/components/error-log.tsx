@@ -31,19 +31,6 @@ function loadErrors(): ErrorRecord[] {
   return Array.from(map.values()).sort((a, b) => a.id.localeCompare(b.id))
 }
 
-const kindColors: Record<string, string> = {
-  error: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-  warning: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-  info: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-}
-
-const groupBorderColors: Record<string, string> = {
-  unresolved: 'border-red-400 dark:border-red-600',
-  recurrent: 'border-red-300 dark:border-red-700',
-  workaround: 'border-yellow-400 dark:border-yellow-600',
-  permanent: 'border-green-300 dark:border-green-800',
-}
-
 const groupHeadings: Record<string, string> = {
   unresolved: 'Unresolved',
   recurrent: 'Recurrent',
@@ -51,29 +38,48 @@ const groupHeadings: Record<string, string> = {
   permanent: 'Permanently fixed',
 }
 
+// Kind expressed as a symbol + label, no colour
+const kindSymbol: Record<ErrorRecord['kind'], string> = {
+  error:   '×',
+  warning: '!',
+  info:    'i',
+}
+
 type GroupKey = 'unresolved' | 'recurrent' | 'workaround' | 'permanent'
 
-function ErrorCard({ error }: { error: ErrorRecord }) {
-  const borderColor = groupBorderColors[error.resolution ?? 'unresolved']
+function ErrorRow({ error }: { error: ErrorRecord }) {
+  const symbol = kindSymbol[error.kind]
+  const isDimmed = error.resolution === 'permanent'
+
   return (
-    <div className={`border-l-2 ${borderColor} pl-6`} id={error.id.toLowerCase()}>
-      <div className="flex items-start gap-3 mb-1">
-        <span className={`inline-block rounded px-2 py-0.5 text-xs font-medium mt-0.5 ${kindColors[error.kind] ?? ''}`}>
-          {error.kind}
+    <div
+      id={error.id.toLowerCase()}
+      className={`py-5 border-t border-fd-border first:border-t-0 ${isDimmed ? 'opacity-50' : ''}`}
+    >
+      <div className="flex items-start gap-3">
+        <span className="font-mono text-sm text-fd-muted-foreground shrink-0 w-4 text-center mt-px" aria-hidden>
+          {symbol}
         </span>
-        <p className="font-medium text-sm">{error.summary}</p>
+        <div className="min-w-0 flex-1 space-y-1.5">
+          <p className="text-sm font-medium leading-snug">{error.summary}</p>
+          <p className="font-mono text-xs text-fd-muted-foreground">
+            {error.id}
+            <span className="mx-1.5">·</span>
+            {error.kind}
+            <span className="mx-1.5">·</span>
+            {error.ts.slice(0, 10)}
+            {error.seen_count && error.seen_count > 1 && (
+              <span className="ml-2">seen {error.seen_count}×</span>
+            )}
+          </p>
+          {error.remedy && (
+            <p className="text-sm text-fd-muted-foreground">
+              <span className="font-mono text-xs uppercase tracking-widest mr-2">Remedy</span>
+              {error.remedy}
+            </p>
+          )}
+        </div>
       </div>
-      <p className="text-xs text-fd-muted-foreground mb-2 pl-0">
-        {error.id} · {error.ts.slice(0, 10)}
-        {error.seen_count && error.seen_count > 1 && (
-          <span className="ml-2 text-fd-muted-foreground">seen {error.seen_count}×</span>
-        )}
-      </p>
-      {error.remedy && (
-        <p className="text-sm text-fd-muted-foreground">
-          <span className="font-medium text-fd-foreground">Remedy:</span> {error.remedy}
-        </p>
-      )}
     </div>
   )
 }
@@ -114,12 +120,12 @@ export function ErrorLog() {
         if (items.length === 0) return null
         return (
           <div key={group}>
-            <h3 className="text-sm font-semibold text-fd-muted-foreground uppercase tracking-wide mb-4">
+            <p className="font-mono text-xs text-fd-muted-foreground uppercase tracking-widest mb-1">
               {groupHeadings[group]}
-            </h3>
-            <div className="space-y-6">
+            </p>
+            <div>
               {items.map((error) => (
-                <ErrorCard key={error.id} error={error} />
+                <ErrorRow key={error.id} error={error} />
               ))}
             </div>
           </div>

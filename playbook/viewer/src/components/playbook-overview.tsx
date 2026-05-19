@@ -18,7 +18,6 @@ const NORTH_STAR_PLACEHOLDER = 'Replace with one sentence describing the outcome
 
 function parseSimpleYaml(text: string): PlaybookData {
   const data: PlaybookData = {}
-  // Strip YAML front-matter delimiters
   const content = text.replace(/^---\n/, '').replace(/\n---\s*$/, '')
   const lines = content.split('\n')
 
@@ -36,7 +35,6 @@ function parseSimpleYaml(text: string): PlaybookData {
       i++
       while (i < lines.length && lines[i].match(/^\s+-/)) {
         const ownerBlock: { name?: string; role?: string } = {}
-        // grab name/role lines under this entry
         i++
         while (i < lines.length && lines[i].match(/^\s{4,}/)) {
           const ownerLine = lines[i].trim()
@@ -67,7 +65,6 @@ function parseSimpleYaml(text: string): PlaybookData {
       continue
     }
 
-    // Scalar values
     const cleaned = val.replace(/^["']|["']$/g, '')
     if (key === 'styleguide_present' || key === 'design_present') {
       (data as Record<string, unknown>)[key] = cleaned === 'true'
@@ -83,25 +80,23 @@ function parseSimpleYaml(text: string): PlaybookData {
 function loadPlaybook(): PlaybookData | null {
   const filePath = resolve(process.cwd(), '..', 'playbook.yaml')
   if (!existsSync(filePath)) return null
-
   try {
-    const text = readFileSync(filePath, 'utf8')
-    return parseSimpleYaml(text)
+    return parseSimpleYaml(readFileSync(filePath, 'utf8'))
   } catch {
     return null
   }
 }
 
-function StatusBadge({ label, active }: { label: string; active: boolean }) {
+function Artefact({ label, active }: { label: string; active: boolean }) {
   return (
     <span
-      className={`inline-block rounded px-2 py-0.5 text-xs font-medium ${
+      className={`inline-block border rounded px-2 py-0.5 text-xs font-mono ${
         active
-          ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-          : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
+          ? 'border-fd-foreground text-fd-foreground'
+          : 'border-fd-border text-fd-muted-foreground'
       }`}
     >
-      {label}
+      {active ? label : `${label} —`}
     </span>
   )
 }
@@ -122,9 +117,8 @@ export function PlaybookOverview() {
 
   return (
     <div className="space-y-6">
-      {/* North star */}
-      <div className="rounded-lg border border-fd-border bg-fd-card p-6">
-        <p className="text-xs font-semibold uppercase tracking-wide text-fd-muted-foreground mb-2">
+      <div className="rounded-lg border border-fd-border p-6">
+        <p className="text-xs font-mono text-fd-muted-foreground mb-3 uppercase tracking-widest">
           North Star
         </p>
         {isPlaceholderNorthStar ? (
@@ -133,23 +127,22 @@ export function PlaybookOverview() {
             <code>north_star</code> placeholder.
           </p>
         ) : (
-          <p className="text-lg font-medium leading-snug">{data.north_star}</p>
+          <p className="text-lg leading-snug">{data.north_star}</p>
         )}
       </div>
 
-      {/* Meta grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
         {data.id && (
           <div>
-            <p className="text-xs text-fd-muted-foreground mb-1 font-medium">Project ID</p>
+            <p className="text-xs font-mono text-fd-muted-foreground mb-1 uppercase tracking-widest">Project ID</p>
             <p className="font-mono text-xs">{data.id}</p>
           </div>
         )}
 
         {data.owners && data.owners.length > 0 && (
           <div>
-            <p className="text-xs text-fd-muted-foreground mb-1 font-medium">Owners</p>
-            <ul className="space-y-0.5">
+            <p className="text-xs font-mono text-fd-muted-foreground mb-1 uppercase tracking-widest">Owners</p>
+            <ul className="list-none space-y-0.5">
               {data.owners.map((o, i) => (
                 <li key={i} className="text-xs">
                   {o.name || '—'}
@@ -163,16 +156,16 @@ export function PlaybookOverview() {
         )}
 
         <div>
-          <p className="text-xs text-fd-muted-foreground mb-1 font-medium">Artefacts</p>
+          <p className="text-xs font-mono text-fd-muted-foreground mb-2 uppercase tracking-widest">Artefacts</p>
           <div className="flex gap-2 flex-wrap">
-            <StatusBadge label="Styleguide" active={data.styleguide_present ?? false} />
-            <StatusBadge label="Design" active={data.design_present ?? false} />
+            <Artefact label="Styleguide" active={data.styleguide_present ?? false} />
+            <Artefact label="Design" active={data.design_present ?? false} />
           </div>
         </div>
 
         {data.provenance?.updated_at && (
           <div>
-            <p className="text-xs text-fd-muted-foreground mb-1 font-medium">Last updated</p>
+            <p className="text-xs font-mono text-fd-muted-foreground mb-1 uppercase tracking-widest">Last updated</p>
             <p className="text-xs font-mono">{data.provenance.updated_at}</p>
           </div>
         )}
