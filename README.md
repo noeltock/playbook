@@ -1,85 +1,92 @@
 # /playbook
 
+[![Validate](https://github.com/noeltock/playbook/actions/workflows/validate.yml/badge.svg)](https://github.com/noeltock/playbook/actions/workflows/validate.yml)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 One folder. Every agent, same brain.
 
-Drop `playbook/` into any agentic-coding project. From that moment, Claude, Codex, Cursor — any agent — knows the project's north star, tool doctrine, design rules, decisions already made, and errors already hit.
+Drop `playbook/` into any repo where AI agents are doing meaningful work. From that moment, Claude, Codex, Cursor — any agent — knows the project's north star, tool doctrine, design rules, decisions already made, and errors already hit. It contributes from minute one without asking what the codebase is about.
 
 ---
 
 ## Install
 
+**From GitHub (no npm publish required):**
+
 ```bash
-npx playbook init
+npx github:noeltock/playbook init
 ```
 
-Drops `playbook/` and a thin `AGENTS.md` routing stub into your repo. Detects and seeds `.cursor/rules`, `.windsurf/rules`, `.agents/skills/`, and `CLAUDE.md` automatically.
-
-Or as a submodule:
+**From a specific git URL (SSH or HTTPS):**
 
 ```bash
-git submodule add https://github.com/noeltock/playbook
+npx github:noeltock/playbook init --from git@github.com:noeltock/playbook.git
+```
+
+Both commands drop `playbook/` and a thin `AGENTS.md` routing stub into the current directory. Existing files are never overwritten — only new files are added. Detects and seeds `.cursor/rules`, `.windsurf/rules`, `.agents/skills/`, and `CLAUDE.md` automatically.
+
+**Or as a submodule** (pin to a specific version):
+
+```bash
+git submodule add git@github.com:noeltock/playbook.git
 ```
 
 ---
 
 ## What you get
 
-| File / Folder | What it does |
+| File / Folder | Purpose |
 |---|---|
+| `AGENTS.md` | Root routing stub — the one file every agent reads first |
 | `playbook/NORTH-STAR.md` | Why the project exists and what success looks like |
 | `playbook/TOOLS.md` | Tool doctrine: what to use, what to avoid, and why |
-| `playbook/DESIGN.md` | Product and UX rules (optional, seeded by `/design` skill) |
+| `playbook/DESIGN.md` | Product and UX rules (optional, owned by design) |
 | `playbook/STYLEGUIDE.md` | Visual rules: colours, type, spacing, components |
-| `playbook/tokens.json` | DTCG-compliant design token file |
+| `playbook/tokens.json` | DTCG-compliant design tokens — machine-readable counterpart to STYLEGUIDE.md |
 | `playbook/decisions.jsonl` | Append-only MADR-shaped ADR log |
-| `playbook/DECISIONS.md` | Auto-rendered view of decisions — do not edit by hand |
+| `playbook/DECISIONS.md` | Rendered view of decisions — regenerated, do not edit by hand |
 | `playbook/errors.jsonl` | Append-only error/warning log with remedies and resolution state |
-| `playbook/ERRORS.md` | Auto-rendered view of errors — do not edit by hand |
-| `playbook/playbook.yaml` | Playbook config: id, north star summary, provenance |
+| `playbook/ERRORS.md` | Rendered view of errors — regenerated, do not edit by hand |
+| `playbook/playbook.yaml` | Canonical config: id, north star summary, owners, provenance |
 | `playbook/schemas/` | JSON Schemas for `playbook.yaml`, `decisions.jsonl`, `errors.jsonl` |
-| `playbook/skills/` | Five SKILL.md files — slash commands for any agent |
-| `playbook/hooks/` | PostToolUse hooks: drift detection + viewer rebuild |
-| `playbook/hooks/hooks.json` | Hook manifest for Claude Code |
-| `playbook/hooks/detect-drift.sh` | Nudges the agent when structural files change |
-| `playbook/hooks/rebuild-viewer.sh` | Rebuilds viewer output when JSONL sources are written |
-| `playbook/scripts/render.js` | Regenerates DECISIONS.md and ERRORS.md from JSONL |
-| `playbook/scripts/validate.js` | Validates JSONL records against JSON Schemas |
+| `playbook/skills/` | Five SKILL.md slash commands, one per concern |
+| `playbook/hooks/hooks.json` | Claude Code PostToolUse hook manifest |
 | `playbook/viewer/` | Fumadocs docs site — sticky nav, content right |
-| `templates/AGENTS.md` | Host-project routing stub (AGENTS.md standard) |
-| `templates/CLAUDE.md` | Host-project Claude Code alias stub |
 
 ---
 
 ## Skills
 
-| Skill | What it does |
+Five slash commands ship with the playbook. They work in Claude Code out of the box; Codex and Cursor users call them manually.
+
+| Skill | When to use |
 |---|---|
-| `/playbook-decide` | Records a non-trivial decision as a MADR entry in `decisions.jsonl`, then renders `DECISIONS.md` |
-| `/playbook-error` | Records an error or warning in `errors.jsonl` with context, remedy, and resolution state |
-| `/playbook-sync` | Diffs the repo against the playbook's last recorded commit, surfaces drift, and offers to absorb changes |
-| `/playbook-render` | Pure-function regeneration of `DECISIONS.md` and `ERRORS.md` from their JSONL sources |
-| `/playbook-styleguide` | Scans the codebase for visual primitives and generates or maintains `STYLEGUIDE.md` and `tokens.json` |
+| `/playbook-decide` | Before or after a non-trivial architectural decision — writes a MADR record to `decisions.jsonl` |
+| `/playbook-error` | When you hit a warning or error — records it with context, remedy, and resolution state in `errors.jsonl` |
+| `/playbook-sync` | After meaningful diffs — detects drift between the repo and the playbook and offers to absorb it |
+| `/playbook-render` | Regenerates `DECISIONS.md` and `ERRORS.md` from their JSONL sources |
+| `/playbook-styleguide` | Creates or updates `STYLEGUIDE.md` and `tokens.json` from a codebase scan |
 
 ---
 
 ## Self-healing
 
-Two triggers keep the playbook in sync automatically:
+Two triggers keep the playbook current automatically:
 
-- **`/playbook-sync`** — run on demand, agent-agnostic. Reads `provenance.git_commit` from `playbook.yaml`, diffs the repo since that commit, classifies drift by type (dependency changes, new directories, env vars, API surface), and asks what to absorb.
-- **PostToolUse hooks** (Claude Code) — `detect-drift.sh` fires after every `Bash`, `Write`, and `Edit` tool call. When structural files like `package.json` or `.env.example` are touched, it nudges the agent to run `/playbook-sync`. `rebuild-viewer.sh` fires after any `Write` that touches `decisions.jsonl` or `errors.jsonl`, triggering a viewer rebuild if output is tracked by git.
+- **`/playbook-sync`** (agent-agnostic) — reads `provenance.git_commit` from `playbook.yaml`, diffs the repo since that commit, classifies drift by type (dependency changes, new directories, env vars, new API surface), and prompts you to absorb what matters.
+- **PostToolUse hooks** (Claude Code only) — `detect-drift.sh` fires after `Bash`, `Write`, and `Edit` tool calls. When structural files (`package.json`, `.env.example`) are touched, it nudges the agent to run `/playbook-sync`. `rebuild-viewer.sh` rebuilds the viewer when `decisions.jsonl` or `errors.jsonl` are written, if viewer output is tracked by git.
+
+Codex and Cursor get the skill; Claude Code gets both.
 
 ---
 
 ## Viewer
 
 ```bash
-cd playbook/viewer
-npm install
-npm run dev
+cd playbook/viewer && npm install && npm run dev
 ```
 
-Opens a Fumadocs docs site at `localhost:3000`. Sticky left nav, content right. `<DecisionLog>`, `<ErrorLog>`, `<TokenGrid>`, and `<PlaybookOverview>` render from the live source files.
+A Fumadocs docs site at `localhost:3000`. Sticky left nav, content right. Four MDX components render live from the source files: `<DecisionLog>`, `<ErrorLog>`, `<TokenGrid>`, `<PlaybookOverview>`.
 
 ---
 
@@ -93,4 +100,4 @@ Opens a Fumadocs docs site at `localhost:3000`. Sticky left nav, content right. 
 
 ## License
 
-MIT © Noel Tock
+MIT © [Noel Tock](https://noeltock.com)
